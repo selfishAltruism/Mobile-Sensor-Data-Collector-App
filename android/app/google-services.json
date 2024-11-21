@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "137819477162",
+    "project_id": "fit-t-b8174",
+    "storage_bucket": "fit-t-b8174.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137819477162:android:8db32385fe4ffbbfd92cd3",
+        "android_client_info": {
+          "package_name": "com.fitrace_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137819477162-60to5idomsuq502376pkl4tqqsjb6f16.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fitrace_app",
+            "certificate_hash": "0918056dbbed697b2dceef88c84a906b2e0a9c54"
+          }
+        },
+        {
+          "client_id": "137819477162-vo5gjrggsrie381ou8bub1rajvqlfq7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fitrace_app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "137819477162-h9mn7558h9hhuf9eihn6k641etm4q80u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvJl9b0xWeZyYteg_GFtn_CmgYWTWx-s0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137819477162-8vldgkb6adlisng9012duju6ud371ueg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "137819477162-bj7tkv1g9a381gpgc1o0j1pp6g4j86bh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.lees.fit-t"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
