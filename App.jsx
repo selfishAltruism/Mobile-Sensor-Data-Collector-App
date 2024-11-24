@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, Text, StyleSheet } from "react-native";
+import { SafeAreaView, Text, StyleSheet, Button } from "react-native";
 
 import requestBluetoothPermission from "./src/permissions/requestBluetoothPermission";
+import scanAndStoreDevices from "./src/utils/bluetoothScan";
 
 const App = () => {
   useEffect(() => {
@@ -10,7 +11,12 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>Hello, React Native!</Text>
+      <Button
+        title="Start"
+        onPress={() => {
+          scanAndStoreDevices;
+        }}
+      ></Button>
     </SafeAreaView>
   );
 };
