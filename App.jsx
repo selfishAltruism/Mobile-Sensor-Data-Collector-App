@@ -1,23 +1,42 @@
-import React, { useEffect } from "react";
-import { SafeAreaView, Text, StyleSheet, Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  Button,
+  View,
+  TouchableOpacity,
+} from "react-native";
 
 import requestBluetoothPermission from "./src/permissions/requestBluetoothPermission";
-import scanAndStoreDevices from "./src/utils/bluetoothScan";
+import Scan from "./src/utils/Scan";
+import ResultModal from "./src/entities/ResultModal";
 
 const App = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   useEffect(() => {
     requestBluetoothPermission();
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Button
-        title="Start"
-        onPress={() => {
-          scanAndStoreDevices;
-        }}
-      ></Button>
-    </SafeAreaView>
+    <>
+      <View style={styles.container}>
+        <Scan />
+        <ResultModal visible={modalVisible} onClose={closeModal} />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={openModal}>
+        <Text style={styles.buttonText}>LOG</Text>
+      </TouchableOpacity>
+    </>
   );
 };
 
@@ -28,8 +47,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  text: {
-    fontSize: 20,
+  button: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 10,
+    backgroundColor: "#555555",
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
     fontWeight: "bold",
   },
 });
