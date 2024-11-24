@@ -1,7 +1,13 @@
-import React from 'react';
-import { SafeAreaView, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from "react";
+import { SafeAreaView, Text, StyleSheet } from "react-native";
+
+import requestBluetoothPermission from "./src/permissions/requestBluetoothPermission";
 
 const App = () => {
+  useEffect(() => {
+    requestBluetoothPermission();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Hello, React Native!</Text>
@@ -12,13 +18,13 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   text: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
