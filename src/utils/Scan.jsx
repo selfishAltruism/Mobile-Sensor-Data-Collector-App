@@ -89,7 +89,7 @@ const Scan = () => {
           }
         }}
       >
-        <Text style={styles.buttonText}>{isScanning ? "Stop" : "Scan"}</Text>
+        <Text style={styles.buttonText}>{isScanning ? "STOP" : "SCAN"}</Text>
       </TouchableOpacity>
     </View>
   );
