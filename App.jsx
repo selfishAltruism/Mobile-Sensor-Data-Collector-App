@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  StyleSheet,
-  Button,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import WifiListScreen from "./src/entities/Test";
 
 import requestBluetoothPermission from "./src/permissions/requestBluetoothPermission";
+
 import Scan from "./src/utils/Scan";
 import ResultModal from "./src/entities/ResultModal";
 
