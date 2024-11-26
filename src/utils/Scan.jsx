@@ -1,10 +1,16 @@
 const INTERVER = 1000;
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 
 import { BleManager } from "react-native-ble-plx";
 import WifiManager from "react-native-wifi-reborn";
+import {
+  magnetometer,
+  setUpdateIntervalForType,
+  gyroscope,
+  SensorTypes,
+} from "react-native-sensors";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -14,6 +20,9 @@ const Scan = () => {
   const [isScanning, setIsScanning] = useState(false); // 스캔 중 상태
   const [scanInterval, setScanInterval] = useState(null); // 스캔 간격 관리
   const [error, setError] = useState(false);
+
+  const magSubscription = useRef(null);
+  const gyroSubscription = useRef(null);
 
   // Bluetooth 장치 검색 함수
   const scanBluetoouth = () => {
@@ -79,6 +88,36 @@ const Scan = () => {
     setIsScanning(true);
   };
 
+  useEffect(() => {
+    if (isScanning) {
+      setUpdateIntervalForType(SensorTypes.magnetometer, INTERVER);
+      magSubscription.current = magnetometer.subscribe(
+        (data) => {
+          AsyncStorage.setItem(Date.now() + "-magnet", JSON.stringify(data));
+          console.log("마그네토미터 측정 완료");
+        },
+        (error) => console.error("마그네토미터 오류: ", error)
+      );
+    } else {
+      if (magSubscription.current) magSubscription.current.unsubscribe();
+    }
+  }, [isScanning]);
+
+  useEffect(() => {
+    if (isScanning) {
+      setUpdateIntervalForType(SensorTypes.gyroscope, INTERVER);
+      gyroSubscription.current = gyroscope.subscribe(
+        (data) => {
+          AsyncStorage.setItem(Date.now() + "-gyroscope", JSON.stringify(data));
+          console.log("자이로 측정 완료");
+        },
+        (error) => console.error("자이로 오류: ", error)
+      );
+    } else {
+      if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
+    }
+  }, [isScanning]);
+
   // 스캔을 중지하는 함수
   const stopScanning = () => {
     clearInterval(scanInterval); // interval 정지
@@ -91,6 +130,12 @@ const Scan = () => {
       stopScanning();
     }
   }, [error]);
+
+  useEffect(() => {
+    if (isScanning && error) {
+      startScanning();
+    }
+  }, [isScanning, error]);
 
   const styles = StyleSheet.create({
     button: {
