@@ -103,7 +103,9 @@ const Scan = () => {
 
       // JSON으로 데이터를 파일로 저장
       const fileContent = data.map(([key, value]) => ({ key, value }));
-      const path = `${RNFS.DownloadDirectoryPath}/scanned_data.json`;
+      const path = `${
+        RNFS.DownloadDirectoryPath
+      }/scanned_data-${Date.now()}.json`;
 
       await RNFS.writeFile(path, JSON.stringify(fileContent, null, 2), "utf8");
       console.log(`데이터가 저장되었습니다: ${path}`);
