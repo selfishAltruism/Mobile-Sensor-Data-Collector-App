@@ -7,6 +7,8 @@ import requestBluetoothPermission from "./src/permissions/requestBluetoothPermis
 import Scan from "./src/utils/Scan";
 import ResultModal from "./src/entities/ResultModal";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -22,10 +24,24 @@ const App = () => {
     requestBluetoothPermission();
   }, []);
 
+  const onPosition = () => {
+    (async () => {
+      await AsyncStorage.setItem(Date.now() + "-position", JSON.stringify([]));
+    })();
+  };
+
   return (
     <>
       <View style={styles.container}>
         <Scan />
+        <TouchableOpacity
+          style={styles.positionButton}
+          onPress={() => {
+            onPosition();
+          }}
+        >
+          <Text style={styles.positionButtonText}>POSITION SAVE</Text>
+        </TouchableOpacity>
         <ResultModal visible={modalVisible} onClose={closeModal} />
       </View>
       <TouchableOpacity style={styles.button} onPress={openModal}>
@@ -51,6 +67,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  positionButton: {
+    padding: 10,
+    backgroundColor: "#ffd000",
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  positionButtonText: {
     color: "white",
     fontWeight: "bold",
   },

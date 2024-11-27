@@ -1,5 +1,3 @@
-const INTERVER = 1000;
-
 import React, { useState, useEffect, useRef } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 
@@ -13,7 +11,9 @@ import {
 } from "react-native-sensors";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RNFS from "react-native-fs";
 
+const INTERVER = 1000;
 const bleManager = new BleManager();
 
 const Scan = () => {
@@ -24,14 +24,14 @@ const Scan = () => {
   const magSubscription = useRef(null);
   const gyroSubscription = useRef(null);
 
+  const magCount = useRef(0);
+  const gyroCount = useRef(0);
+
   // Bluetooth 장치 검색 함수
   const scanBluetoouth = () => {
-    // 블루투스가 이미 스캔 중일 경우, 이전 스캔을 종료
     bleManager.stopDeviceScan();
-
     const devices = [];
 
-    // Bluetooth 장치 검색 시작
     bleManager.startDeviceScan([], null, (error, device) => {
       if (error) {
         console.log("블루투스 검색 중 오류 발생: ", error);
@@ -39,7 +39,6 @@ const Scan = () => {
         return;
       }
 
-      // 유효한 장치가 발견되면 devices 배열에 추가
       if (device && !devices.some((d) => d.id === device.id)) {
         devices.push({ id: device.id, name: device.name, rssi: device.rssi });
       }
@@ -50,7 +49,6 @@ const Scan = () => {
       console.log("블루투스 스캔 종료");
 
       try {
-        // AsyncStorage에 블루투스 정보 저장
         await AsyncStorage.setItem(
           Date.now() + "-bluetooth",
           JSON.stringify(devices)
@@ -75,8 +73,8 @@ const Scan = () => {
     }
   };
 
-  // 1초마다 scanBluetoouth 호출하는 함수
   const startScanning = () => {
+    console.log("[시작]");
     setError(false);
 
     const interval = setInterval(async () => {
@@ -88,11 +86,43 @@ const Scan = () => {
     setIsScanning(true);
   };
 
+  const stopScanning = () => {
+    console.log("[종료]");
+    clearInterval(scanInterval);
+    bleManager.stopDeviceScan();
+    setIsScanning(false);
+
+    if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
+    if (magSubscription.current) magSubscription.current.unsubscribe();
+  };
+
+  const saveDataToFile = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const data = await AsyncStorage.multiGet(keys);
+
+      // JSON으로 데이터를 파일로 저장
+      const fileContent = data.map(([key, value]) => ({ key, value }));
+      const path = `${RNFS.DownloadDirectoryPath}/scanned_data.json`;
+
+      await RNFS.writeFile(path, JSON.stringify(fileContent, null, 2), "utf8");
+      console.log(`데이터가 저장되었습니다: ${path}`);
+    } catch (error) {
+      console.error("데이터 저장 중 오류:", error);
+    }
+  };
+
   useEffect(() => {
     if (isScanning) {
+      if (magSubscription.current) magSubscription.current.unsubscribe();
       setUpdateIntervalForType(SensorTypes.magnetometer, INTERVER);
       magSubscription.current = magnetometer.subscribe(
         (data) => {
+          if (magCount.current > 1) {
+            magCount.current = 0;
+            return;
+          }
+          magCount.current++;
           AsyncStorage.setItem(Date.now() + "-magnet", JSON.stringify(data));
           console.log("마그네토미터 측정 완료");
         },
@@ -105,9 +135,14 @@ const Scan = () => {
 
   useEffect(() => {
     if (isScanning) {
+      if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
       setUpdateIntervalForType(SensorTypes.gyroscope, INTERVER);
       gyroSubscription.current = gyroscope.subscribe(
         (data) => {
+          if (gyroCount.current > 1) {
+            gyroCount.current = 0;
+            return;
+          }
           AsyncStorage.setItem(Date.now() + "-gyroscope", JSON.stringify(data));
           console.log("자이로 측정 완료");
         },
@@ -117,25 +152,6 @@ const Scan = () => {
       if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
     }
   }, [isScanning]);
-
-  // 스캔을 중지하는 함수
-  const stopScanning = () => {
-    clearInterval(scanInterval); // interval 정지
-    bleManager.stopDeviceScan(); // 스캔 종료
-    setIsScanning(false);
-  };
-
-  useEffect(() => {
-    if (error) {
-      stopScanning();
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isScanning && error) {
-      startScanning();
-    }
-  }, [isScanning, error]);
 
   const styles = StyleSheet.create({
     button: {
@@ -148,9 +164,11 @@ const Scan = () => {
       color: "white",
       fontWeight: "bold",
     },
-    error: {
-      color: "red",
-      fontWeight: "bold",
+    saveButton: {
+      padding: 10,
+      backgroundColor: "green",
+      borderRadius: 5,
+      marginTop: 10,
     },
   });
 
@@ -172,7 +190,12 @@ const Scan = () => {
             }
           }}
         >
-          <Text style={styles.buttonText}>{isScanning ? "STOP" : "SCAN"}</Text>
+          <Text style={styles.buttonText}>
+            {isScanning ? "SCAN STOP" : "SCAN ON"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={saveDataToFile}>
+          <Text style={styles.buttonText}>DATA SAVE</Text>
         </TouchableOpacity>
       </View>
     </>
