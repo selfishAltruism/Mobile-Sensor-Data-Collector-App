@@ -157,19 +157,26 @@ const Scan = () => {
 
   const styles = StyleSheet.create({
     button: {
+      marginTop: 20,
+      alignSelf: "center",
       padding: 10,
       backgroundColor: isScanning ? "red" : "blue",
       borderRadius: 5,
+      width: 150,
       marginTop: 10,
     },
     buttonText: {
       color: "white",
       fontWeight: "bold",
+      alignSelf: "center",
     },
     saveButton: {
+      marginTop: 20,
+      alignSelf: "center",
       padding: 10,
       backgroundColor: "green",
       borderRadius: 5,
+      width: 150,
       marginTop: 10,
     },
   });
@@ -178,7 +185,7 @@ const Scan = () => {
     <>
       {error ? (
         <Text style={styles.error}>
-          에러 발생하였습니다. 다시 실행해 주세요.
+          블루투스 에러가 발생하여, 재가동 되었습니다.
         </Text>
       ) : null}
       <View>

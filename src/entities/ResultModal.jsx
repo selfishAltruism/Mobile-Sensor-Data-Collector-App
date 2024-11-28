@@ -117,10 +117,18 @@ const ResultModal = ({ visible, onClose }) => {
               padding: 10,
               backgroundColor: "#007bff",
               borderRadius: 5,
-              width: 100,
+              width: 150,
             }}
           >
-            <Text style={{ color: "white", alignSelf: "center" }}>CLOSE</Text>
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "center",
+                fontWeight: "bold",
+              }}
+            >
+              CLOSE
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={copyDataToClipboard} // 초기화 확인 모달 실행
@@ -130,10 +138,18 @@ const ResultModal = ({ visible, onClose }) => {
               padding: 10,
               backgroundColor: "#363636",
               borderRadius: 5,
-              width: 100,
+              width: 150,
             }}
           >
-            <Text style={{ color: "white", alignSelf: "center" }}>COPY</Text>
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "center",
+                fontWeight: "bold",
+              }}
+            >
+              COPY
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={confirmReset} // 초기화 확인 모달 실행
@@ -143,10 +159,18 @@ const ResultModal = ({ visible, onClose }) => {
               padding: 10,
               backgroundColor: "red",
               borderRadius: 5,
-              width: 100,
+              width: 150,
             }}
           >
-            <Text style={{ color: "white", alignSelf: "center" }}>RESET</Text>
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "center",
+                fontWeight: "bold",
+              }}
+            >
+              RESET
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

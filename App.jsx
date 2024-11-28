@@ -71,14 +71,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   positionButton: {
+    marginTop: 20,
+    alignSelf: "center",
     padding: 10,
     backgroundColor: "#ffd000",
     borderRadius: 5,
+    width: 150,
     marginTop: 10,
   },
   positionButtonText: {
     color: "white",
     fontWeight: "bold",
+    alignSelf: "center",
   },
 });
 
