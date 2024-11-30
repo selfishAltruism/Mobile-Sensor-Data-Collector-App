@@ -7,6 +7,7 @@ import {
   magnetometer,
   setUpdateIntervalForType,
   gyroscope,
+  accelerometer, // 가속도계 추가
   SensorTypes,
 } from "react-native-sensors";
 
@@ -23,41 +24,21 @@ const Scan = () => {
 
   const magSubscription = useRef(null);
   const gyroSubscription = useRef(null);
+  const accelSubscription = useRef(null); // 가속도계 구독 추가
 
-  const magCount = useRef(0);
-  const gyroCount = useRef(0);
+  const devices = useRef([]);
 
   // Bluetooth 장치 검색 함수
   const scanBluetoouth = () => {
-    bleManager.stopDeviceScan();
-    const devices = [];
-
-    bleManager.startDeviceScan([], null, (error, device) => {
-      if (error) {
-        console.log("블루투스 검색 중 오류 발생: ", error);
-        setError(true);
-        return;
-      }
-
-      if (device && !devices.some((d) => d.id === device.id)) {
-        devices.push({ id: device.id, name: device.name, rssi: device.rssi });
-      }
+    AsyncStorage.setItem(
+      Date.now() + "-bluetooth",
+      JSON.stringify(devices.current)
+    ).then(() => {
+      console.log("블루투스 스캔 완료");
     });
 
-    setTimeout(async () => {
-      bleManager.stopDeviceScan();
-      console.log("블루투스 스캔 종료");
-
-      try {
-        await AsyncStorage.setItem(
-          Date.now() + "-bluetooth",
-          JSON.stringify(devices)
-        );
-        console.log("블루투스 정보 저장됨");
-      } catch (error) {
-        console.error("AsyncStorage에 저장 실패:", error);
-      }
-    }, INTERVER);
+    //console.log(devices.current);
+    devices.current = [];
   };
 
   const scanWifi = async () => {
@@ -74,11 +55,26 @@ const Scan = () => {
   };
 
   const startScanning = () => {
-    console.log("[시작]");
     setError(false);
 
+    bleManager.startDeviceScan([], null, (error, device) => {
+      if (error) {
+        console.log("블루투스 검색 중 오류 발생: ", error);
+        setError(true);
+        return;
+      }
+
+      if (device && !devices.current.some((d) => d.id === device.id)) {
+        devices.current.push({
+          id: device.id,
+          name: device.name,
+          rssi: device.rssi,
+        });
+      }
+    });
+
     const interval = setInterval(async () => {
-      await scanBluetoouth();
+      scanBluetoouth();
       await scanWifi();
     }, INTERVER);
 
@@ -88,12 +84,14 @@ const Scan = () => {
 
   const stopScanning = () => {
     console.log("[종료]");
+
     clearInterval(scanInterval);
     bleManager.stopDeviceScan();
     setIsScanning(false);
 
     if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
     if (magSubscription.current) magSubscription.current.unsubscribe();
+    if (accelSubscription.current) accelSubscription.current.unsubscribe(); // 가속도계 구독 해제
   };
 
   const saveDataToFile = async () => {
@@ -120,11 +118,6 @@ const Scan = () => {
       setUpdateIntervalForType(SensorTypes.magnetometer, INTERVER);
       magSubscription.current = magnetometer.subscribe(
         (data) => {
-          if (magCount.current > 1) {
-            magCount.current = 0;
-            return;
-          }
-          magCount.current++;
           AsyncStorage.setItem(Date.now() + "-magnet", JSON.stringify(data));
           console.log("마그네토미터 측정 완료");
         },
@@ -141,10 +134,6 @@ const Scan = () => {
       setUpdateIntervalForType(SensorTypes.gyroscope, INTERVER);
       gyroSubscription.current = gyroscope.subscribe(
         (data) => {
-          if (gyroCount.current > 1) {
-            gyroCount.current = 0;
-            return;
-          }
           AsyncStorage.setItem(Date.now() + "-gyroscope", JSON.stringify(data));
           console.log("자이로 측정 완료");
         },
@@ -152,6 +141,25 @@ const Scan = () => {
       );
     } else {
       if (gyroSubscription.current) gyroSubscription.current.unsubscribe();
+    }
+  }, [isScanning]);
+
+  useEffect(() => {
+    if (isScanning) {
+      if (accelSubscription.current) accelSubscription.current.unsubscribe(); // 기존 구독 해제
+      setUpdateIntervalForType(SensorTypes.accelerometer, INTERVER);
+      accelSubscription.current = accelerometer.subscribe(
+        (data) => {
+          AsyncStorage.setItem(
+            Date.now() + "-accelerometer",
+            JSON.stringify(data)
+          );
+          console.log("가속도계 측정 완료");
+        },
+        (error) => console.error("가속도계 오류: ", error)
+      );
+    } else {
+      if (accelSubscription.current) accelSubscription.current.unsubscribe(); // 구독 해제
     }
   }, [isScanning]);
 
