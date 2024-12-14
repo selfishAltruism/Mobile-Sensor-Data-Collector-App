@@ -12,7 +12,7 @@
 
 - 본 어플리케이션은 최종 결과물 App이 아님.
 - 최종 결과물 APP에 사용되는 알고리즘 구현을 위한 센서 데이터 값을 수집을 위한 APP
-  - [**최종 결과물 APP Repository Link**](https://github.com/selfishAltruism/Sensor-Based-Positioning-App)
+  - [**최종 결과물 App Repository Link**](https://github.com/selfishAltruism/Sensor-Based-Positioning-App)
 - **수집되는 센서값**: Magnetometer, Gyroscope, Accelerometer, Bluetooth, WiFi
 - App 이름과 로고는 본 프로젝트와 무관
 
